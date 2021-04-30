@@ -27,8 +27,8 @@ public class InkLinesSystem {
 
     public void startDraw(int mouseX, int mouseY, int pmouseX, int pmouseY) {
         drawing = true;
-        lines.add(new InkLine(sketch));
-        newLine = lines.get(lines.size() - 1);
+        InkLine newLine = new InkLine(sketch);
+        lines.add(newLine);
 
         if (mouseX >= 0 && mouseY >= 0) {
             newLine.append(mouseX, mouseY, pmouseX, pmouseY);
@@ -65,10 +65,8 @@ public class InkLinesSystem {
         }
     }
 
-    public void show() {
-        for (InkLine i : lines) {
-            i.update();
-        }
+    public void update() {
+        lines.forEach(InkLine::update);
     }
 
     public void setSketch(PApplet sketch) {

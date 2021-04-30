@@ -21,7 +21,7 @@ public class InkLine {
 
     private ArrayList<Line> line;
     private PApplet sketch;
-    private float r = 5;
+    private final float lineThickness = 5;
 
     public InkLine(PApplet sketch) {
         this.sketch = sketch;
@@ -34,7 +34,7 @@ public class InkLine {
 
     public void update() {
         sketch.stroke(0);
-        sketch.strokeWeight(r);
+        sketch.strokeWeight(lineThickness);
         sketch.fill(0);
         for (Line p : line) {
             sketch.line(p.start.x, p.start.y, p.end.x, p.end.y);
