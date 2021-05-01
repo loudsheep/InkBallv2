@@ -21,13 +21,18 @@ public class LevelScene extends Scene {
     }
 
     private boolean loadLevel(int level) {
-        File f = new File("assets/levels/level" + level + ".lvl");
+        File folder = new File("assets/levels");
+        File f = null;
 
-        if (f.exists() && f.isFile()) {
+        if (folder.isDirectory() && folder.listFiles().length > 0) {
+            File[] files = folder.listFiles();
+            f = level < files.length ? files[level] : files[0];
+        }
+
+        if (f != null && f.isFile()) {
             this.gameGrid = new GameGrid(sketch, 10, 10, width, height);
             return true;
         }
-
         return false;
     }
 
@@ -45,8 +50,6 @@ public class LevelScene extends Scene {
         }
 
         sketch.translate(0, panelHeight);
-
-
     }
 
     @Override

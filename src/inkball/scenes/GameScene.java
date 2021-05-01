@@ -6,4 +6,6 @@ public interface GameScene {
     void quit();
 
     void setScene(int scene);
+
+    void setScene(Scene scene);
 }

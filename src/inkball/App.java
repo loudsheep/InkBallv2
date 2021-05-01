@@ -63,6 +63,12 @@ public class App extends PApplet implements GameScene {
         currentScene.init();
     }
 
+    @Override
+    public void setScene(Scene scene) {
+        currentScene = scene;
+        currentScene.init();
+    }
+
     public static void main(String[] args) {
         PApplet.main("inkball.App", args);
     }
