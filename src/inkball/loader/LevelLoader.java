@@ -9,7 +9,7 @@ public class LevelLoader {
         this.filePath = filepath;
     }
 
-    public GameGrid createGame(int gameWidth, int gameHeight) {
+    public GameGrid createGameGrid(int gameWidth, int gameHeight) {
         return null;
     }
 }

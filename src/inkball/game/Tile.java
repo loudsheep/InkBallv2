@@ -58,6 +58,39 @@ public class Tile {
 
         sketch.rectMode(PConstants.CORNER);
         sketch.rect(position.x, position.y, width, height);
+
+        if (tileType == TILE_TYPE.SPAWN) {
+            sketch.fill(150);
+            sketch.circle(position.x + width / 2f, position.y + height / 2f, width / 3f);
+        }
+        else if (tileType == TILE_TYPE.ONE_WAY_DOWN || tileType == TILE_TYPE.ONE_WAY_LEFT || tileType == TILE_TYPE.ONE_WAY_RIGHT || tileType == TILE_TYPE.ONE_WAY_UP) {
+            sketch.push();
+
+            sketch.fill(3, 84, 0);
+
+            sketch.noStroke();
+            sketch.translate(position.x + width / 2f, position.y + height / 2f);
+            switch (tileType) {
+                case ONE_WAY_DOWN:
+                    sketch.rotate(PConstants.PI);
+                    sketch.fill(3, 84, 0);
+                    break;
+                case ONE_WAY_LEFT:
+                    sketch.rotate(-PConstants.PI / 2);
+                    sketch.fill(0, 6, 84);
+                    break;
+                case ONE_WAY_RIGHT:
+                    sketch.rotate(PConstants.PI / 2);
+                    sketch.fill(0, 6, 84);
+                    break;
+            }
+
+            sketch.triangle(-width / 4f, height / 5f,
+                    0, -height / 4f,
+                    width / 4f, height / 5f);
+
+            sketch.pop();
+        }
     }
 
     public int getWidth() {
