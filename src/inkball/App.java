@@ -1,5 +1,6 @@
 package inkball;
 
+import inkball.loader.LevelLoader;
 import inkball.scenes.*;
 import processing.core.PApplet;
 
@@ -71,5 +72,10 @@ public class App extends PApplet implements GameScene {
 
     public static void main(String[] args) {
         PApplet.main("inkball.App", args);
+        try {
+            LevelLoader.createGameGrid("assets/levels/level1.lvl", 100, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
