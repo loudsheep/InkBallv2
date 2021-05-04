@@ -14,15 +14,12 @@ public class GameGrid {
     private List<Ball> balls;
     private List<Ball> waitingBalls;
 
-    private InkLinesSystem userLines;
-
     public GameGrid(PApplet sketch, int squaresX, int squaresY, int width, int height) {
         this.sketch = sketch;
         this.squaresX = squaresX;
         this.squaresY = squaresY;
         this.width = width;
         this.height = height;
-        this.userLines = new InkLinesSystem(sketch);
         this.map = new Tile[squaresX][squaresY];
     }
 
@@ -36,7 +33,6 @@ public class GameGrid {
 
     public void setSketch(PApplet sketch) {
         this.sketch = sketch;
-        this.userLines = new InkLinesSystem(sketch);
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j].setSketch(sketch);
@@ -45,9 +41,6 @@ public class GameGrid {
     }
 
     public void update() {
-        userLines.draw(sketch.mouseX, sketch.mouseY, sketch.pmouseX, sketch.pmouseY);
-        userLines.update();
-
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j].update();
@@ -64,10 +57,8 @@ public class GameGrid {
     }
 
     public void mousePressed(int mouseX, int mouseY) {
-        userLines.startDraw(mouseX, mouseY, sketch.pmouseX, sketch.pmouseY);
     }
 
     public void mouseReleased(int mouseX, int mouseY) {
-        userLines.stopDraw();
     }
 }

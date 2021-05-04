@@ -1,12 +1,12 @@
 package inkball.scenes;
 
 import inkball.game.GameGrid;
+import inkball.game.InkLinesSystem;
 import inkball.loader.LevelLoader;
 import processing.core.PApplet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class LevelScene extends Scene {
     private int panelHeight;
@@ -15,11 +15,12 @@ public class LevelScene extends Scene {
     private boolean gameStarted = false;
 
     private GameGrid gameGrid;
+    private InkLinesSystem userLines;
 
     public LevelScene(PApplet sketch, GameScene gameScene, int width, int height, int panelHeight) {
         super(sketch, gameScene, width, height);
         this.panelHeight = panelHeight;
-        System.out.println(loadLevel(2));
+        this.userLines = new InkLinesSystem(sketch);
     }
 
     private boolean loadLevel(int level) {
@@ -39,7 +40,6 @@ public class LevelScene extends Scene {
                 e.printStackTrace();
                 return false;
             }
-//            this.gameGrid = new GameGrid(sketch, 10, 10, width, height);
             return true;
         }
         return false;
@@ -47,7 +47,7 @@ public class LevelScene extends Scene {
 
     @Override
     public void init() {
-//        loadLevel(0);
+        loadLevel(0);
     }
 
     @Override
@@ -60,13 +60,20 @@ public class LevelScene extends Scene {
 
         sketch.translate(0, panelHeight);
         gameGrid.update();
+
+        userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
+        userLines.update();
     }
 
     @Override
     public void mousePressed(int mouseX, int mouseY) {
+        gameGrid.mousePressed(mouseX, mouseY);
+        userLines.startDraw(mouseX, mouseY - panelHeight);
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY) {
+        gameGrid.mouseReleased(mouseX, mouseY);
+        userLines.stopDraw();
     }
 }

@@ -36,8 +36,8 @@ public class InkLine {
         sketch.stroke(0);
         sketch.strokeWeight(lineThickness);
         sketch.fill(0);
-        for (Line p : line) {
-            sketch.line(p.start.x, p.start.y, p.end.x, p.end.y);
+        for (Line lineSegment : line) {
+            sketch.line(lineSegment.start.x, lineSegment.start.y, lineSegment.end.x, lineSegment.end.y);
         }
     }
 }

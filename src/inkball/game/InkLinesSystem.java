@@ -25,13 +25,13 @@ public class InkLinesSystem {
         newLine.update();
     }
 
-    public void startDraw(int mouseX, int mouseY, int pmouseX, int pmouseY) {
+    public void startDraw(int mouseX, int mouseY) {
         drawing = true;
-        InkLine newLine = new InkLine(sketch);
+        newLine = new InkLine(sketch);
         lines.add(newLine);
 
         if (mouseX >= 0 && mouseY >= 0) {
-            newLine.append(mouseX, mouseY, pmouseX, pmouseY);
+            newLine.append(mouseX, mouseY, mouseX, mouseY);
         }
     }
 
