@@ -1,6 +1,7 @@
 package inkball.scenes;
 
 import inkball.game.GameGrid;
+import inkball.loader.LevelLoader;
 import processing.core.PApplet;
 
 import java.io.File;
@@ -18,6 +19,7 @@ public class LevelScene extends Scene {
     public LevelScene(PApplet sketch, GameScene gameScene, int width, int height, int panelHeight) {
         super(sketch, gameScene, width, height);
         this.panelHeight = panelHeight;
+        System.out.println(loadLevel(2));
     }
 
     private boolean loadLevel(int level) {
@@ -30,7 +32,14 @@ public class LevelScene extends Scene {
         }
 
         if (f != null && f.isFile()) {
-            this.gameGrid = new GameGrid(sketch, 10, 10, width, height);
+            try {
+                this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight);
+                this.gameGrid.setSketch(sketch);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+//            this.gameGrid = new GameGrid(sketch, 10, 10, width, height);
             return true;
         }
         return false;
@@ -38,7 +47,7 @@ public class LevelScene extends Scene {
 
     @Override
     public void init() {
-        loadLevel(1);
+//        loadLevel(0);
     }
 
     @Override
@@ -50,6 +59,7 @@ public class LevelScene extends Scene {
         }
 
         sketch.translate(0, panelHeight);
+        gameGrid.update();
     }
 
     @Override

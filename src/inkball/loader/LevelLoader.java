@@ -38,15 +38,40 @@ public class LevelLoader {
         // set ball radius to be 2 pixels thinner than tile width
         float ballRadius = (squareSize.x / 2) - 2;
 
-        int postionY = 0;
+        int positionY = 0;
         for (int i = 1; i < mapDimensions.y + 1; i++) {
             String[] line = lines.get(i).split(",");
-            for (int i1 = 0; i1 < line.length; i1++) {
-                System.out.println(line[i1]);
+
+            int positionX = 0;
+            for (int j = 0; j < line.length; j++) {
+                String[] expr = line[j].split("=");
+                if (expr.length < 2) throw new IncorrectFileFormat("Error while splitting by '='");
+
+                int numberOfSquares = Integer.parseInt(expr[0]);
+                Tile.TILE_TYPE tileType = Tile.TILE_TYPE.valueOf(expr[1]);
+                Tile.TILE_COLOR tileColor = null;
+
+                if (expr.length == 3) {
+                    tileColor = Tile.TILE_COLOR.valueOf(expr[2]);
+                    resultGrid.setTileAt(positionX, positionY,
+                            new Tile(positionX * squareSize.x, positionY * squareSize.y, squareSize.x * 3,
+                                    squareSize.y*3,
+                                    tileType, tileColor));
+                    positionX++;
+                    continue;
+                }
+
+                for (int k = 0; k < numberOfSquares; k++) {
+                    resultGrid.setTileAt(positionX, positionY,
+                            new Tile(positionX * squareSize.x, positionY * squareSize.y, squareSize.x, squareSize.y, tileType));
+                    positionX++;
+                }
             }
-            System.out.println();
+
+            positionY++;
+            currentLine++;
         }
 
-        return null;
+        return resultGrid;
     }
 }

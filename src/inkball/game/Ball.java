@@ -8,7 +8,6 @@ public class Ball {
         BLUE,
         GREEN,
         ORANGE,
-        RED,
         YELLOW
     }
 
