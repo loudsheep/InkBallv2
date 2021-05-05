@@ -127,9 +127,9 @@ public class Tile {
                     break;
             }
 
-            sketch.triangle(-width / 4f, height / 5f,
-                    0, -height / 4f,
-                    width / 4f, height / 5f);
+            sketch.triangle(-width / 5f, height / 6f,
+                    0, -height / 5f,
+                    width / 5f, height / 6f);
 
             sketch.pop();
         } else if (tileType == TILE_TYPE.HOLE) {

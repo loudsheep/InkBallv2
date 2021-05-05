@@ -1,5 +1,6 @@
 package inkball.loader;
 
+import inkball.game.BallSystem;
 import inkball.game.GameGrid;
 import inkball.game.Tile;
 import vector.Vector2;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class LevelLoader {
+
     public static GameGrid createGameGrid(String filePath, int gameWidth, int gameHeight) throws FileNotFoundException {
         File levelFile = new File(filePath);
         Scanner scanner = new Scanner(levelFile);
@@ -34,6 +36,7 @@ public class LevelLoader {
         Tile[][] gridTiles = new Tile[(int) mapDimensions.x][(int) mapDimensions.y];
 
         Vector2 squareSize = new Vector2(gameWidth / mapDimensions.x, gameHeight / mapDimensions.y);
+        System.out.println(squareSize);
 
         // set ball radius to be 2 pixels thinner than tile width
         float ballRadius = (squareSize.x / 2) - 2;
@@ -55,7 +58,7 @@ public class LevelLoader {
                     tileColor = Tile.TILE_COLOR.valueOf(expr[2]);
                     resultGrid.setTileAt(positionX, positionY,
                             new Tile(positionX * squareSize.x, positionY * squareSize.y, squareSize.x * 3,
-                                    squareSize.y*3,
+                                    squareSize.y * 3,
                                     tileType, tileColor));
                     positionX++;
                     continue;
@@ -73,5 +76,9 @@ public class LevelLoader {
         }
 
         return resultGrid;
+    }
+
+    public static BallSystem loadBallConfig(String filePath) {
+        return null;
     }
 }

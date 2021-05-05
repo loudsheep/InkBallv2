@@ -72,4 +72,8 @@ public class InkLinesSystem {
     public void setSketch(PApplet sketch) {
         this.sketch = sketch;
     }
+
+    public void clear() {
+        this.lines.clear();
+    }
 }
