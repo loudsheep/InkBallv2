@@ -2,16 +2,17 @@ package inkball.game;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import vector.Vector2;
 
 import java.util.ArrayList;
 
 public class InkLine {
     static class Line {
-        PVector start, end;
+        Vector2 start, end;
         float angle;
         float len;
 
-        public Line(PVector start, PVector end) {
+        public Line(Vector2 start, Vector2 end) {
             this.start = start;
             this.end = end;
             angle = PApplet.atan2(start.y - end.y, start.x - end.x);
@@ -19,9 +20,9 @@ public class InkLine {
         }
     }
 
-    private ArrayList<Line> line;
+    public ArrayList<Line> line;
     private PApplet sketch;
-    private final float lineThickness = 5;
+    public final float lineThickness = 5;
 
     public InkLine(PApplet sketch) {
         this.sketch = sketch;
@@ -29,7 +30,7 @@ public class InkLine {
     }
 
     public void append(int mouseX, int mouseY, int pmouseX, int pmouseY) {
-        line.add(new Line(new PVector(mouseX, mouseY), new PVector(pmouseX, pmouseY)));
+        line.add(new Line(new Vector2(mouseX, mouseY), new Vector2(pmouseX, pmouseY)));
     }
 
     public void update() {

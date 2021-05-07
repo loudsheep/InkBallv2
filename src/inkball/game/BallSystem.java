@@ -4,6 +4,7 @@ import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BallSystem {
     private PApplet sketch;
@@ -34,16 +35,13 @@ public class BallSystem {
         }
     }
 
-    public void update() {
+    public void update(GameGrid gameGrid, InkLinesSystem userLines) {
         for (Ball b : balls) {
-            b.update();
+            b.update(gameGrid, userLines);
         }
     }
 
-    public void addWaitingBall(Ball b) {
-        b.setSketch(sketch);
-        this.waitingBalls.add(b);
-        ballWaitingCount++;
+    public void addWaitingBall(Ball b, int frame) {
     }
 
     public void addBall(Ball b) {
@@ -59,9 +57,5 @@ public class BallSystem {
 
     public List<Ball> getBalls() {
         return balls;
-    }
-
-    public List<Ball> getWaitingBalls() {
-        return waitingBalls;
     }
 }

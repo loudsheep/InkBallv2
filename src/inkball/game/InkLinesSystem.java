@@ -76,4 +76,12 @@ public class InkLinesSystem {
     public void clear() {
         this.lines.clear();
     }
+
+    public int getLinesLength() {
+        return lines.size();
+    }
+
+    public InkLine getLine(int index) {
+        return lines.get(index);
+    }
 }

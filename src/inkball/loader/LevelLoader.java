@@ -37,7 +37,6 @@ public class LevelLoader {
         Tile[][] gridTiles = new Tile[(int) mapDimensions.x][(int) mapDimensions.y];
 
         Vector2 squareSize = new Vector2(gameWidth / mapDimensions.x, gameHeight / mapDimensions.y);
-        System.out.println(squareSize);
 
         // set ball radius to be 2 pixels thinner than tile width
         float ballRadius = (squareSize.x / 2) - 2;
@@ -121,11 +120,35 @@ public class LevelLoader {
                     }
 
                     ballSystem.addBall(new Ball(px, py, new Vector2(velX, velY), speed, ballRadius, ballColor));
+                } else if (line[0].equals("dynamic")) {
+                    int speed = 4;
+                    int frame = 0;
+                    Ball.COLOR ballColor = Ball.COLOR.BLUE;
+
+                    for (int i = 1; i < line.length; i++) {
+                        String[] param = line[i].split("=");
+                        if (param.length < 2) {
+                            throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                        }
+
+                        switch (param[0]) {
+                            case "speed":
+                                speed = Integer.parseInt(param[1]);
+                                break;
+                            case "color":
+                                ballColor = Ball.COLOR.valueOf(param[1]);
+                                break;
+                            case "frame":
+                                frame = Integer.parseInt(param[1]);
+                                break;
+                        }
+                    }
+
+                    if (line.length > 3) {
+//                        ballSystem.addWaitingBall(new Ball());
+                    } else {
+                    }
                 }
-                // TODO Implement dynamic type of ball
-//                else if (line[0].equals("dynamic")) {
-//
-//                }
             }
         }
 

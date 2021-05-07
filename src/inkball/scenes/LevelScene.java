@@ -121,7 +121,7 @@ public class LevelScene extends Scene {
             gameGrid.update();
             userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
             userLines.update();
-            ballSystem.update();
+            ballSystem.update(gameGrid, userLines);
         }
         nextLvl.show();
         prevLvl.show();
