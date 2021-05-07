@@ -1,5 +1,6 @@
 package inkball.loader;
 
+import inkball.game.Ball;
 import inkball.game.BallSystem;
 import inkball.game.GameGrid;
 import inkball.game.Tile;
@@ -12,7 +13,7 @@ import java.util.Scanner;
 
 public class LevelLoader {
 
-    public static GameGrid createGameGrid(String filePath, int gameWidth, int gameHeight) throws FileNotFoundException {
+    public static GameGrid createGameGrid(String filePath, int gameWidth, int gameHeight, BallSystem ballSystem) throws FileNotFoundException {
         File levelFile = new File(filePath);
         Scanner scanner = new Scanner(levelFile);
 
@@ -42,13 +43,15 @@ public class LevelLoader {
         float ballRadius = (squareSize.x / 2) - 2;
 
         int positionY = 0;
-        for (int i = 1; i < mapDimensions.y + 1; i++) {
+        for (int i = 1; i < mapDimensions.y + 1; i++, currentLine++) {
             String[] line = lines.get(i).split(",");
 
             int positionX = 0;
             for (int j = 0; j < line.length; j++) {
                 String[] expr = line[j].split("=");
-                if (expr.length < 2) throw new IncorrectFileFormat("Error while splitting by '='");
+                if (expr.length < 2) {
+                    throw new IncorrectFileFormat("Error while splitting by '=' at line " + (currentLine + 1));
+                }
 
                 int numberOfSquares = Integer.parseInt(expr[0]);
                 Tile.TILE_TYPE tileType = Tile.TILE_TYPE.valueOf(expr[1]);
@@ -72,7 +75,58 @@ public class LevelLoader {
             }
 
             positionY++;
-            currentLine++;
+        }
+
+        if (currentLine < lines.size()) { // some ball setting left in file to be loaded
+            for (; currentLine < lines.size(); currentLine++) {
+                String[] line = lines.get(currentLine).split(",");
+                if (line.length < 4) {
+                    throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                }
+
+                if (line[0].equals("static")) {
+                    int speed = 4;
+                    int px = 1;
+                    int py = 1;
+                    int velX = 1;
+                    int velY = 1;
+                    Ball.COLOR ballColor = Ball.COLOR.BLUE;
+
+                    for (int i = 1; i < line.length; i++) {
+                        String[] param = line[i].split("=");
+                        if (param.length < 2) {
+                            throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                        }
+
+                        switch (param[0]) {
+                            case "speed":
+                                speed = Integer.parseInt(param[1]);
+                                break;
+                            case "posX":
+                                px = (int) (Integer.parseInt(param[1]) * squareSize.x + squareSize.x / 2f);
+                                break;
+                            case "posY":
+                                py = (int) (Integer.parseInt(param[1]) * squareSize.y + squareSize.y / 2f);
+                                break;
+                            case "velX":
+                                velX = Integer.parseInt(param[1]);
+                                break;
+                            case "velY":
+                                velY = Integer.parseInt(param[1]);
+                                break;
+                            case "color":
+                                ballColor = Ball.COLOR.valueOf(param[1].toUpperCase());
+                                break;
+                        }
+                    }
+
+                    ballSystem.addBall(new Ball(px, py, new Vector2(velX, velY), speed, ballRadius, ballColor));
+                }
+                // TODO Implement dynamic type of ball
+//                else if (line[0].equals("dynamic")) {
+//
+//                }
+            }
         }
 
         return resultGrid;

@@ -1,6 +1,7 @@
 package inkball.scenes;
 
 import gui.Button;
+import inkball.game.BallSystem;
 import inkball.game.GameGrid;
 import inkball.game.InkLinesSystem;
 import inkball.loader.LevelLoader;
@@ -29,11 +30,13 @@ public class LevelScene extends Scene {
     // game related stuff
     private GameGrid gameGrid;
     private InkLinesSystem userLines;
+    private BallSystem ballSystem;
 
     public LevelScene(PApplet sketch, GameScene gameScene, int width, int height, int panelHeight) {
         super(sketch, gameScene, width, height);
         this.panelHeight = panelHeight;
         this.userLines = new InkLinesSystem(sketch);
+        this.ballSystem = new BallSystem(sketch);
     }
 
     private boolean loadLevel(int level) {
@@ -54,7 +57,8 @@ public class LevelScene extends Scene {
 
         if (f != null && f.isFile()) {
             try {
-                this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight);
+                this.ballSystem.clearAll();
+                this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight, ballSystem);
                 this.gameGrid.setSketch(sketch);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -117,6 +121,7 @@ public class LevelScene extends Scene {
             gameGrid.update();
             userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
             userLines.update();
+            ballSystem.update();
         }
         nextLvl.show();
         prevLvl.show();
