@@ -9,10 +9,11 @@ import processing.core.PApplet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Set;
 
 public class LevelScene extends Scene {
     private int panelHeight;
-    private int level = 1;
+    private int level = 0;
     private int maxLevel = 0;
     private boolean gamePaused = false;
     private boolean gameStarted = false;
@@ -43,7 +44,6 @@ public class LevelScene extends Scene {
         if (folder.isDirectory() && folder.listFiles().length > 0) {
             File[] files = folder.listFiles();
             this.maxLevel = files.length - 1;
-//            f = level < files.length ? files[level] : files[files.length - 1];
             if (level < files.length) {
                 f = files[level];
             } else {
@@ -54,7 +54,6 @@ public class LevelScene extends Scene {
 
         if (f != null && f.isFile()) {
             try {
-//                this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight);
                 this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight);
                 this.gameGrid.setSketch(sketch);
             } catch (FileNotFoundException e) {
@@ -83,11 +82,29 @@ public class LevelScene extends Scene {
         resetLvl.setAction(this::restartLevel);
         resetLvl.setActive(true);
 
+        togglePause = new Button(sketch, "Pause", Settings.textSize / 2, width - width / 8f, -panelHeight,
+                width / 8f, panelHeight);
+        togglePause.setAction(this::togglePause);
+        togglePause.setActive(true);
+
+        quitToMenu = new Button(sketch, "Quit to main menu", Settings.textSize, width / 4f, (int) (height / 5 * 2.5),
+                width / 2f,
+                height / 10f);
+        quitToMenu.setAction(this::endGame);
+        quitToMenu.setActive(false);
+
+        resumeGame = new Button(sketch, "Resume", Settings.textSize, width / 4f, (int) (height / 5 * 1.5), width / 2f,
+                height / 10f);
+        resumeGame.setAction(this::togglePause);
+        resumeGame.setActive(false);
+
         loadLevel(level);
     }
 
     @Override
     public void update() {
+
+
         if (gamePaused) {
             sketch.background(220, 250);
         } else {
@@ -95,14 +112,18 @@ public class LevelScene extends Scene {
         }
 
         sketch.translate(0, panelHeight);
-        gameGrid.update();
 
-        userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
-        userLines.update();
-
+        if (!gamePaused) {
+            gameGrid.update();
+            userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
+            userLines.update();
+        }
         nextLvl.show();
         prevLvl.show();
         resetLvl.show();
+        togglePause.show();
+        resumeGame.show();
+        quitToMenu.show();
     }
 
     @Override
@@ -112,6 +133,9 @@ public class LevelScene extends Scene {
         nextLvl.clicked(mouseX, mouseY - panelHeight);
         prevLvl.clicked(mouseX, mouseY - panelHeight);
         resetLvl.clicked(mouseX, mouseY - panelHeight);
+        togglePause.clicked(mouseX, mouseY - panelHeight);
+        resumeGame.clicked(mouseX, mouseY - panelHeight);
+        quitToMenu.clicked(mouseX, mouseY - panelHeight);
     }
 
     @Override
@@ -121,6 +145,13 @@ public class LevelScene extends Scene {
         nextLvl.released(mouseX, mouseY - panelHeight);
         prevLvl.released(mouseX, mouseY - panelHeight);
         resetLvl.released(mouseX, mouseY - panelHeight);
+        togglePause.released(mouseX, mouseY - panelHeight);
+        resumeGame.released(mouseX, mouseY - panelHeight);
+        quitToMenu.released(mouseX, mouseY - panelHeight);
+    }
+
+    private void endGame() {
+        gameScene.setScene(0);
     }
 
     private void restartLevel() {
@@ -138,5 +169,21 @@ public class LevelScene extends Scene {
         if (level - 1 < 0) return;
         userLines.clear();
         loadLevel(--level);
+    }
+
+    private void togglePause() {
+        togglePause(!this.gamePaused);
+    }
+
+    private void togglePause(boolean pause) {
+        this.gamePaused = pause;
+
+        nextLvl.setActive(!pause);
+        prevLvl.setActive(!pause);
+        resetLvl.setActive(!pause);
+        togglePause.setActive(!pause);
+
+        resumeGame.setActive(pause);
+        quitToMenu.setActive(pause);
     }
 }
