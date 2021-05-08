@@ -61,4 +61,31 @@ public class GameGrid {
 
     public void mouseReleased(int mouseX, int mouseY) {
     }
+
+    public Tile getTile(int x, int y) {
+        if (x < 0 || x >= this.map.length) return null;
+        if (y < 0 || y >= this.map[x].length) return null;
+
+        return this.map[x][y];
+    }
+
+    public int getSquaresX() {
+        return squaresX;
+    }
+
+    public int getSquaresY() {
+        return squaresY;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public float getSquareWidth() {
+        return (float) width / squaresX;
+    }
 }

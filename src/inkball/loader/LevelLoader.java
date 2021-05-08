@@ -80,7 +80,7 @@ public class LevelLoader {
             for (; currentLine < lines.size(); currentLine++) {
                 String[] line = lines.get(currentLine).split(",");
                 if (line.length < 4) {
-                    throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                    throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
                 }
 
                 if (line[0].equals("static")) {
@@ -94,7 +94,7 @@ public class LevelLoader {
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
                         if (param.length < 2) {
-                            throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
                         }
 
                         switch (param[0]) {
@@ -128,7 +128,7 @@ public class LevelLoader {
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
                         if (param.length < 2) {
-                            throw new IncorrectFileFormat("Ball setting incorrect at line" + (currentLine + 1));
+                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
                         }
 
                         switch (param[0]) {

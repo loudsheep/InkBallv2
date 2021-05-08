@@ -1,8 +1,12 @@
 package inkball.game;
 
+import inkball.util.Settings;
 import processing.core.PApplet;
 import processing.core.PVector;
+import util.Color;
 import vector.Vector2;
+
+import java.util.Set;
 
 public class Ball {
     public enum COLOR {
@@ -40,6 +44,57 @@ public class Ball {
         this.position.add(this.velocity);
     }
 
+    private void show() {
+        if (color != null) {
+            Color fillColor = Settings.ballColors.get(color);
+            sketch.fill(fillColor.r, fillColor.g, fillColor.b);
+        }
+
+        sketch.noStroke();
+        sketch.circle(position.x, position.y, radius * 2);
+
+        if (Settings.DEBUG) {
+            sketch.stroke(255, 0, 0);
+            sketch.strokeWeight(3);
+
+            Vector2 vel = new Vector2(this.velocity).mult(radius);
+            sketch.line(position.x, position.y, position.x + vel.x, position.y + vel.y);
+        }
+    }
+
+    public void update(GameGrid gameGrid, InkLinesSystem userLines) {
+        updatePosition();
+        collideWithLines(userLines);
+        collideWithMap(gameGrid);
+
+        show();
+    }
+
+    // collision with tiles on map
+    public void collideWithMap(GameGrid gameGrid) {
+        Vector2 approxPosition = new Vector2();
+        approxPosition.x = (int) (position.x / gameGrid.getWidth() * gameGrid.getSquaresX());
+        approxPosition.y = (int) (position.y / gameGrid.getHeight() * gameGrid.getSquaresY());
+
+        if (Settings.DEBUG) {
+            sketch.stroke(255, 0, 0);
+            sketch.strokeWeight(2);
+            sketch.fill(255, 0, 0, 100);
+            sketch.rect((approxPosition.x - 1) * gameGrid.getSquareWidth(),
+                    (approxPosition.y - 1) * gameGrid.getSquareWidth(),
+                    gameGrid.getSquareWidth() * 3,
+                    gameGrid.getSquareWidth() * 3);
+        }
+
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j)) != null) {
+                }
+            }
+        }
+    }
+
+    // collision with lines drawn by player
     private void collideWithLines(InkLinesSystem userLines) {
         if (userLines.getLinesLength() == 0) return;
 
@@ -62,44 +117,21 @@ public class Ball {
         }
     }
 
-    private void show() {
-        switch (color) {
-            case BLUE:
-                sketch.fill(53, 62, 194);
-                break;
-            case GREEN:
-                sketch.fill(24, 167, 66);
-                break;
-            case ORANGE:
-                sketch.fill(245, 117, 29);
-                break;
-            case YELLOW:
-                sketch.fill(245, 232, 0);
-                break;
-        }
-
-        sketch.noStroke();
-        sketch.circle(position.x, position.y, radius * 2);
-    }
-
-    public void update(GameGrid gameGrid, InkLinesSystem userLines) {
-        updatePosition();
-        collideWithLines(userLines);
-
-        show();
-    }
-
-    public void setSketch(PApplet sketch) {
-        this.sketch = sketch;
-    }
-
     private boolean intersectingWithLine(InkLine.Line line) {
         Vector2 closest = pointOnLineClosestToCircle(line);
+
+        if (Settings.DEBUG) {
+            sketch.stroke(0, 0, 255);
+            sketch.strokeWeight(0);
+            sketch.line(position.x, position.y, closest.x, closest.y);
+        }
+
         float circleToLineDistSq = Vector2.distSq(position, closest);
 
         return circleToLineDistSq < (radius + 5) * (radius + 5); // ... + 5 is line thickness
     }
 
+    // helper methods
     private Vector2 between(Vector2 start, Vector2 end) { // returns vector between two vectors (used for line collision)
         return new Vector2(end).sub(start);
     }
@@ -130,5 +162,9 @@ public class Ball {
         Vector2 closest = between(pointOnLineClosestToCircle(line), position);
 
         return closest.normalize();
+    }
+
+    public void setSketch(PApplet sketch) {
+        this.sketch = sketch;
     }
 }
