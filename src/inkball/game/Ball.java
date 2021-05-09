@@ -86,12 +86,58 @@ public class Ball {
                     gameGrid.getSquareWidth() * 3);
         }
 
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                if (gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j)) != null) {
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                Tile currentTile = gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j));
+                if (currentTile != null) {
+                    if (currentTile.getTileType() == Tile.TILE_TYPE.FREE ||
+                            currentTile.getTileType() == Tile.TILE_TYPE.SPAWN ||
+                            currentTile.getTileType() == Tile.TILE_TYPE.NONE ||
+                            currentTile.getTileType() == Tile.TILE_TYPE.HOLE) { // don't do physics on that types of tiles
+                        continue;
+                    }
+
+                    if (sideCollision(currentTile)) continue;
                 }
             }
         }
+    }
+
+    private boolean sideCollision(Tile tile) {
+        if (tile.getTileType() == Tile.TILE_TYPE.ONE_WAY_UP || tile.getTileType() == Tile.TILE_TYPE.ONE_WAY_DOWN || tile.getTileType() == Tile.TILE_TYPE.ONE_WAY_LEFT || tile.getTileType() == Tile.TILE_TYPE.ONE_WAY_RIGHT) {
+            return false;
+        }
+
+        if (position.y + radius >= tile.getPosition().y && position.y < tile.getPosition().y + tile.getHeight() && position.x >= tile.getPosition().x && position.x <= tile.getPosition().x + tile.getWidth()) { // up side collision
+            velocity.y = -velocity.y;
+            position.y = tile.getPosition().y - radius;
+
+            return true;
+        }
+
+        if (position.y - radius <= tile.getPosition().y + tile.getHeight() && position.y > tile.getPosition().y && position.x >= tile.getPosition().x && position.x <= tile.getPosition().x + tile.getWidth()) { // down side collision
+            velocity.y = -velocity.y;
+            position.y = tile.getPosition().y + tile.getHeight() + radius;
+
+            return true;
+        }
+
+        if (position.x + radius >= tile.getPosition().x && position.x < tile.getPosition().x + tile.getWidth() && position.y >= tile.getPosition().y && position.y <= tile.getPosition().y + tile.getHeight()) { // left side collision
+            velocity.x = -velocity.x;
+            position.x = tile.getPosition().x - radius;
+
+            return true;
+        }
+
+        if (position.x - radius <= tile.getPosition().x + tile.getWidth() && position.x > tile.getPosition().x && position.y >= tile.getPosition().y && position.y <= tile.getPosition().y + tile.getHeight()) { // right side collision
+            velocity.x = -velocity.x;
+            position.x = tile.getPosition().x + tile.getWidth() + radius;
+
+            return true;
+        }
+
+
+        return false;
     }
 
     // collision with lines drawn by player
