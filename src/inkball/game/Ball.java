@@ -174,7 +174,7 @@ public class Ball {
 
         float circleToLineDistSq = Vector2.distSq(position, closest);
 
-        return circleToLineDistSq < (radius + 5) * (radius + 5); // ... + 5 is line thickness
+        return circleToLineDistSq < (radius + line.lineThickness) * (radius + line.lineThickness); // ... + 5 is line thickness
     }
 
     // helper methods

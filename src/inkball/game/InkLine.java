@@ -8,15 +8,17 @@ import java.util.ArrayList;
 
 public class InkLine {
     static class Line {
-        Vector2 start, end;
-        float angle;
-        float len;
+        public Vector2 start, end;
+        public float angle;
+        public float len;
+        public final float lineThickness;
 
-        public Line(Vector2 start, Vector2 end) {
+        public Line(Vector2 start, Vector2 end, float lineThickness) {
             this.start = start;
             this.end = end;
-            angle = PApplet.atan2(start.y - end.y, start.x - end.x);
-            len = start.dist(end);
+            this.angle = PApplet.atan2(start.y - end.y, start.x - end.x);
+            this.len = start.dist(end);
+            this.lineThickness = lineThickness;
         }
     }
 
@@ -30,7 +32,7 @@ public class InkLine {
     }
 
     public void append(int mouseX, int mouseY, int pmouseX, int pmouseY) {
-        line.add(new Line(new Vector2(mouseX, mouseY), new Vector2(pmouseX, pmouseY)));
+        line.add(new Line(new Vector2(mouseX, mouseY), new Vector2(pmouseX, pmouseY), lineThickness));
     }
 
     public void update() {
