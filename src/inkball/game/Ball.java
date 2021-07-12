@@ -21,9 +21,9 @@ public class Ball {
     private Vector2 velocity;
     private float maxSpeed;
     private float radius;
-    private COLOR color;
+    private BallColor color;
 
-    public Ball(int positionX, int positionY, float maxSpeed, float radius, COLOR color) {
+    public Ball(int positionX, int positionY, float maxSpeed, float radius, BallColor color) {
         this.position = new Vector2(positionX, positionY);
         this.velocity = Vector2.fromAngle((float) (Math.random() * Math.PI * 2));   // initial velocity not specified so pick a random one
         this.maxSpeed = maxSpeed;
@@ -31,7 +31,7 @@ public class Ball {
         this.color = color;
     }
 
-    public Ball(int positionX, int positionY, Vector2 initialVelocity, float maxSpeed, float radius, COLOR color) {
+    public Ball(int positionX, int positionY, Vector2 initialVelocity, float maxSpeed, float radius, BallColor color) {
         this.position = new Vector2(positionX, positionY);
         this.velocity = initialVelocity.copy().setLength(maxSpeed);
         this.maxSpeed = maxSpeed;
@@ -46,7 +46,7 @@ public class Ball {
 
     private void show() {
         if (color != null) {
-            Color fillColor = Settings.ballColors.get(color);
+            Color fillColor = color.color();
             sketch.fill(fillColor.r, fillColor.g, fillColor.b);
         }
 
@@ -174,7 +174,7 @@ public class Ball {
 
         float circleToLineDistSq = Vector2.distSq(position, closest);
 
-        return circleToLineDistSq < (radius + line.lineThickness) * (radius + line.lineThickness); // ... + 5 is line thickness
+        return circleToLineDistSq < (radius + line.lineThickness) * (radius + line.lineThickness);
     }
 
     // helper methods

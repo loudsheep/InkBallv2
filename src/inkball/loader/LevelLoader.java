@@ -1,9 +1,6 @@
 package inkball.loader;
 
-import inkball.game.Ball;
-import inkball.game.BallSystem;
-import inkball.game.GameGrid;
-import inkball.game.Tile;
+import inkball.game.*;
 import vector.Vector2;
 
 import java.io.*;
@@ -89,7 +86,7 @@ public class LevelLoader {
                     int py = 1;
                     int velX = 1;
                     int velY = 1;
-                    Ball.COLOR ballColor = Ball.COLOR.BLUE;
+                    BallColor ballColor = BallColor.BLUE;
 
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
@@ -114,7 +111,7 @@ public class LevelLoader {
                                 velY = Integer.parseInt(param[1]);
                                 break;
                             case "color":
-                                ballColor = Ball.COLOR.valueOf(param[1].toUpperCase());
+                                ballColor = BallColor.valueOf(param[1].toUpperCase());
                                 break;
                         }
                     }
