@@ -64,8 +64,8 @@ public class Ball {
 
     public void update(GameGrid gameGrid, InkLinesSystem userLines) {
         updatePosition();
-        collideWithLines(userLines);
         collideWithMap(gameGrid);
+        collideWithLines(userLines);
 
         show();
     }

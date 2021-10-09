@@ -1,6 +1,7 @@
 package inkball.scenes;
 
 import gui.Button;
+import inkball.editor.EditorScene;
 import inkball.game.BallSystem;
 import inkball.game.GameGrid;
 import inkball.game.InkLinesSystem;
@@ -26,6 +27,7 @@ public class LevelScene extends Scene {
     private Button togglePause;
     private Button quitToMenu;
     private Button resumeGame;
+    private Button editLvl;
 
     // game related stuff
     private GameGrid gameGrid;
@@ -91,16 +93,32 @@ public class LevelScene extends Scene {
         togglePause.setAction(this::togglePause);
         togglePause.setActive(true);
 
-        quitToMenu = new Button(sketch, "Quit to main menu", Settings.textSize, width / 4f, (int) (height / 5 * 2.5),
-                width / 2f,
-                height / 10f);
-        quitToMenu.setAction(this::endGame);
-        quitToMenu.setActive(false);
+        final int totalButtons = 4;
+        float buttonHeight = height / 10f;
+        float buttonWidth = width / 2f;
+        float buttonsStartY =
+                (height - (totalButtons * buttonHeight + (totalButtons - 1) * (buttonHeight / 2))) / 2;
+        System.out.println(height);
+        System.out.println(buttonHeight);
+        System.out.println(buttonsStartY);
+        int btnCount = 0;
 
-        resumeGame = new Button(sketch, "Resume", Settings.textSize, width / 4f, (int) (height / 5 * 1.5), width / 2f,
-                height / 10f);
+        resumeGame = new Button(sketch, "Resume", Settings.textSize, width / 4f,
+                buttonsStartY + btnCount * (buttonHeight + buttonHeight / 2f), buttonWidth, buttonHeight);
         resumeGame.setAction(this::togglePause);
         resumeGame.setActive(false);
+        btnCount++;
+
+        editLvl = new Button(sketch, "Edit this level", Settings.textSize, width / 4f,
+                buttonsStartY + btnCount * (buttonHeight + buttonHeight / 2f), buttonWidth, buttonHeight);
+        editLvl.setAction(this::editLevel);
+        editLvl.setActive(false);
+        btnCount++;
+
+        quitToMenu = new Button(sketch, "Quit to main menu", Settings.textSize, width / 4f,
+                buttonsStartY + btnCount * (buttonHeight + buttonHeight / 2f), buttonWidth, buttonHeight);
+        quitToMenu.setAction(this::endGame);
+        quitToMenu.setActive(false);
 
         loadLevel(level);
     }
@@ -129,30 +147,37 @@ public class LevelScene extends Scene {
         togglePause.show();
         resumeGame.show();
         quitToMenu.show();
+        editLvl.show();
     }
 
     @Override
     public void mousePressed(int mouseX, int mouseY) {
-        gameGrid.mousePressed(mouseX, mouseY);
-        userLines.startDraw(mouseX, mouseY - panelHeight);
+        if (!gamePaused) {
+            gameGrid.mousePressed(mouseX, mouseY);
+            userLines.startDraw(mouseX, mouseY - panelHeight);
+        }
         nextLvl.clicked(mouseX, mouseY - panelHeight);
         prevLvl.clicked(mouseX, mouseY - panelHeight);
         resetLvl.clicked(mouseX, mouseY - panelHeight);
         togglePause.clicked(mouseX, mouseY - panelHeight);
         resumeGame.clicked(mouseX, mouseY - panelHeight);
         quitToMenu.clicked(mouseX, mouseY - panelHeight);
+        editLvl.clicked(mouseX, mouseY - panelHeight);
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY) {
-        gameGrid.mouseReleased(mouseX, mouseY);
-        userLines.stopDraw();
+        if (!gamePaused) {
+            gameGrid.mouseReleased(mouseX, mouseY);
+            userLines.stopDraw();
+        }
         nextLvl.released(mouseX, mouseY - panelHeight);
         prevLvl.released(mouseX, mouseY - panelHeight);
         resetLvl.released(mouseX, mouseY - panelHeight);
         togglePause.released(mouseX, mouseY - panelHeight);
         resumeGame.released(mouseX, mouseY - panelHeight);
         quitToMenu.released(mouseX, mouseY - panelHeight);
+        editLvl.released(mouseX, mouseY - panelHeight);
     }
 
     private void endGame() {
@@ -176,6 +201,11 @@ public class LevelScene extends Scene {
         loadLevel(--level);
     }
 
+    private void editLevel() {
+        EditorScene edit = new EditorScene(sketch, gameScene, width, height, Settings.SIDE_MENU_SIZE);
+        gameScene.setScene(edit);
+    }
+
     private void togglePause() {
         togglePause(!this.gamePaused);
     }
@@ -190,5 +220,6 @@ public class LevelScene extends Scene {
 
         resumeGame.setActive(pause);
         quitToMenu.setActive(pause);
+        editLvl.setActive(pause);
     }
 }

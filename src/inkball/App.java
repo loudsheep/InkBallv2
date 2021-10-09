@@ -1,23 +1,26 @@
 package inkball;
 
-import inkball.loader.LevelLoader;
+import inkball.editor.EditorScene;
 import inkball.scenes.*;
+import inkball.util.Settings;
 import processing.core.PApplet;
 
 public class App extends PApplet implements GameScene {
     private Scene currentScene;
     private int WINDOW_WIDTH = 600;
-    private int MENUBAR_HEIGHT = 30;
+    private int MENU_BAR_HEIGHT = 30;
 
     @Override
     public void settings() {
-        size(WINDOW_WIDTH, WINDOW_WIDTH + MENUBAR_HEIGHT);
+        size(WINDOW_WIDTH, WINDOW_WIDTH + MENU_BAR_HEIGHT);
     }
 
     @Override
     public void setup() {
         setTitle("InkBall");
         setScene(0);
+
+        surface.setResizable(true);
     }
 
     @Override
@@ -37,8 +40,26 @@ public class App extends PApplet implements GameScene {
     }
 
     @Override
+    public void keyPressed() {
+        if(keyCode == 114) {
+            Settings.DEBUG = !Settings.DEBUG;
+        }
+    }
+
+    @Override
     public void setTitle(String title) {
         surface.setTitle(title);
+    }
+
+    @Override
+    public boolean resize(int newWidth, int newHeight) {
+        if(newWidth < Settings.MIN_WIDTH || newWidth > displayWidth ||
+        newHeight < Settings.MIN_HEIGHT || newHeight > displayHeight) {
+            return false;
+        }
+
+        surface.setSize(newWidth, newHeight);
+        return true;
     }
 
     @Override
@@ -53,10 +74,13 @@ public class App extends PApplet implements GameScene {
                 currentScene = new MainMenuScene(this, this, width, height);
                 break;
             case 1:
-                currentScene = new LevelScene(this, this, width, height, MENUBAR_HEIGHT);
+                currentScene = new LevelScene(this, this, width, height, MENU_BAR_HEIGHT);
                 break;
             case 2:
                 currentScene = new SettingsScene(this, this, width, height);
+                break;
+            case 3:
+                currentScene = new EditorScene(this, this, width, height, 100);
                 break;
             default:
                 return;

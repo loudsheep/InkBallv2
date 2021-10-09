@@ -8,7 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Settings {
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
+
+    public static final int MIN_WIDTH = 10;
+    public static final int MIN_HEIGHT = 10;
+    public static final int SIDE_MENU_SIZE = 100;
 
     public static final Map<BallColor, Color> ballColors;
 
