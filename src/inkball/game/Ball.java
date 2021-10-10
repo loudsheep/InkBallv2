@@ -9,13 +9,6 @@ import vector.Vector2;
 import java.util.Set;
 
 public class Ball {
-    public enum COLOR {
-        BLUE,
-        GREEN,
-        ORANGE,
-        YELLOW
-    }
-
     private PApplet sketch;
     private Vector2 position;
     private Vector2 velocity;
@@ -23,15 +16,16 @@ public class Ball {
     private float radius;
     private BallColor color;
 
-    public Ball(int positionX, int positionY, float maxSpeed, float radius, BallColor color) {
+    public Ball(float positionX, float positionY, float maxSpeed, float radius, BallColor color) {
         this.position = new Vector2(positionX, positionY);
-        this.velocity = Vector2.fromAngle((float) (Math.random() * Math.PI * 2));   // initial velocity not specified so pick a random one
+        this.velocity = Vector2.fromAngle((float) (Math.random() * Math.PI * 2)).setLength(maxSpeed);   // initial velocity not specified so pick a random one
         this.maxSpeed = maxSpeed;
         this.radius = radius;
         this.color = color;
     }
 
-    public Ball(int positionX, int positionY, Vector2 initialVelocity, float maxSpeed, float radius, BallColor color) {
+    public Ball(float positionX, float positionY, Vector2 initialVelocity, float maxSpeed, float radius,
+                BallColor color) {
         this.position = new Vector2(positionX, positionY);
         this.velocity = initialVelocity.copy().setLength(maxSpeed);
         this.maxSpeed = maxSpeed;
@@ -165,12 +159,6 @@ public class Ball {
 
     private boolean intersectingWithLine(InkLine.Line line) {
         Vector2 closest = pointOnLineClosestToCircle(line);
-
-        if (Settings.DEBUG) {
-            sketch.stroke(0, 0, 255);
-            sketch.strokeWeight(0);
-            sketch.line(position.x, position.y, closest.x, closest.y);
-        }
 
         float circleToLineDistSq = Vector2.distSq(position, closest);
 

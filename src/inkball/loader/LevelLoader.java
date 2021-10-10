@@ -119,8 +119,8 @@ public class LevelLoader {
                     ballSystem.addBall(new Ball(px, py, new Vector2(velX, velY), speed, ballRadius, ballColor));
                 } else if (line[0].equals("dynamic")) {
                     int speed = 4;
-                    int frame = 0;
-                    Ball.COLOR ballColor = Ball.COLOR.BLUE;
+                    int frame = 60;
+                    BallColor ballColor = BallColor.BLUE;
 
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
@@ -133,7 +133,7 @@ public class LevelLoader {
                                 speed = Integer.parseInt(param[1]);
                                 break;
                             case "color":
-                                ballColor = Ball.COLOR.valueOf(param[1]);
+                                ballColor = BallColor.valueOf(param[1]);
                                 break;
                             case "frame":
                                 frame = Integer.parseInt(param[1]);
@@ -141,10 +141,7 @@ public class LevelLoader {
                         }
                     }
 
-                    if (line.length > 3) {
-//                        ballSystem.addWaitingBall(new Ball());
-                    } else {
-                    }
+                    ballSystem.addWaitingBall(speed, ballColor, frame);
                 }
             }
         }

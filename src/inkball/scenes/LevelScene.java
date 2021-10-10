@@ -2,12 +2,14 @@ package inkball.scenes;
 
 import gui.Button;
 import inkball.editor.EditorScene;
+import inkball.game.BallQueue;
 import inkball.game.BallSystem;
 import inkball.game.GameGrid;
 import inkball.game.InkLinesSystem;
 import inkball.loader.LevelLoader;
 import inkball.util.Settings;
 import processing.core.PApplet;
+import util.Color;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +21,7 @@ public class LevelScene extends Scene {
     private int maxLevel = 0;
     private boolean gamePaused = false;
     private boolean gameStarted = false;
+    private int gameFrame = 0;
 
     // ui
     private Button nextLvl;
@@ -33,12 +36,18 @@ public class LevelScene extends Scene {
     private GameGrid gameGrid;
     private InkLinesSystem userLines;
     private BallSystem ballSystem;
+    private int ballQueueWidth;
+    private float ballInQueueSize;
+    private float ballInQueueSeparation = 10;
 
     public LevelScene(PApplet sketch, GameScene gameScene, int width, int height, int panelHeight) {
         super(sketch, gameScene, width, height);
         this.panelHeight = panelHeight;
         this.userLines = new InkLinesSystem(sketch);
         this.ballSystem = new BallSystem(sketch);
+
+        this.ballQueueWidth = panelHeight * 5;
+        this.ballInQueueSize = panelHeight / 3f * 2;
     }
 
     private boolean loadLevel(int level) {
@@ -60,6 +69,7 @@ public class LevelScene extends Scene {
         if (f != null && f.isFile()) {
             try {
                 this.ballSystem.clearAll();
+                gameFrame = 0;
                 this.gameGrid = LevelLoader.createGameGrid(f.getPath(), width, height - panelHeight, ballSystem);
                 this.gameGrid.setSketch(sketch);
             } catch (FileNotFoundException e) {
@@ -125,22 +135,54 @@ public class LevelScene extends Scene {
 
     @Override
     public void update() {
-
-
         if (gamePaused) {
             sketch.background(220, 250);
         } else {
             sketch.background(220);
+            gameFrame++;
         }
 
+        // draw waiting balls
+        if (!gamePaused) {
+            int maxBallToShow = (int) (ballQueueWidth / (ballInQueueSize + ballInQueueSeparation));
+            sketch.stroke(0);
+            sketch.noFill();
+            sketch.rect(0, 0, ballQueueWidth, panelHeight);
+
+            int i = 0;
+            for (BallQueue ball : ballSystem.getWaitingBalls()) {
+                if (i >= maxBallToShow) break;
+                if (ball.frame < gameFrame) continue;
+
+                float ballX =
+                        ballInQueueSize / 2 + ballInQueueSeparation + i * (ballInQueueSize + ballInQueueSeparation / 2);
+                float ballY = panelHeight / 2f;
+                Color fillColor = ball.color.color();
+                sketch.noStroke();
+                sketch.fill(fillColor.r, fillColor.g, fillColor.b);
+
+                if (ball.frame - 60 < gameFrame) {
+                    if ((ball.frame - gameFrame) % 30 < 15) {
+                        sketch.circle(ballX, ballY, ballInQueueSize);
+                    }
+                } else {
+                    sketch.circle(ballX, ballY, ballInQueueSize);
+                }
+
+                i++;
+            }
+        }
+        
+        // update game
         sketch.translate(0, panelHeight);
 
         if (!gamePaused) {
             gameGrid.update();
             userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
             userLines.update();
-            ballSystem.update(gameGrid, userLines);
+            ballSystem.update(gameGrid, userLines, gameFrame);
         }
+
         nextLvl.show();
         prevLvl.show();
         resetLvl.show();

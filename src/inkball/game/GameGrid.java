@@ -2,6 +2,7 @@ package inkball.game;
 
 import processing.core.PApplet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameGrid {
@@ -13,6 +14,7 @@ public class GameGrid {
     private Tile[][] map;
     private List<Ball> balls;
     private List<Ball> waitingBalls;
+    private List<Tile> spawningSquares = new ArrayList<>();
 
     public GameGrid(PApplet sketch, int squaresX, int squaresY, int width, int height) {
         this.sketch = sketch;
@@ -54,6 +56,9 @@ public class GameGrid {
         }
 
         map[x][y] = tile;
+        if (tile.getTileType() == Tile.TILE_TYPE.SPAWN) {
+            spawningSquares.add(tile);
+        }
     }
 
     public void mousePressed(int mouseX, int mouseY) {
@@ -87,5 +92,9 @@ public class GameGrid {
 
     public float getSquareWidth() {
         return (float) width / squaresX;
+    }
+
+    public List<Tile> getSpawningSquares() {
+        return spawningSquares;
     }
 }
