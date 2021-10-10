@@ -12,8 +12,6 @@ public class GameGrid {
 
     private PApplet sketch;
     private Tile[][] map;
-    private List<Ball> balls;
-    private List<Ball> waitingBalls;
     private List<Tile> spawningSquares = new ArrayList<>();
 
     public GameGrid(PApplet sketch, int squaresX, int squaresY, int width, int height) {
