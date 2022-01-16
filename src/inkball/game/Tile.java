@@ -33,6 +33,12 @@ public class Tile {
 
     public static Map<TILE_COLOR, Color> colorMap;
 
+    public static final int NONE = 0;
+    public static final int TOP_LEFT = 1;
+    public static final int TOP_RIGHT = 2;
+    public static final int BOTTOM_RIGHT = 4;
+    public static final int BOTTOM_LEFT = 8;
+
     static {
         colorMap = new HashMap<>(5);
         colorMap.put(TILE_COLOR.BLUE, new Color(63, 72, 204));
@@ -50,6 +56,8 @@ public class Tile {
     private Vector2 center;
     private TILE_TYPE tileType;
     private TILE_COLOR tileColor;
+
+    public int collidableEdges;
 
     private float attractionRadius = Settings.ATTRACTION_RADIUS;
 
@@ -76,7 +84,7 @@ public class Tile {
     }
 
     public void update() {
-        if(tileType == TILE_TYPE.NONE) return;
+        if (tileType == TILE_TYPE.NONE) return;
 
         sketch.stroke(200);
         sketch.strokeWeight(1);
@@ -143,6 +151,23 @@ public class Tile {
             sketch.strokeWeight(width / 20f);
             sketch.fill(0);
             sketch.circle(center.x, center.y, width / 1.5f);
+        }
+    }
+
+    public void drawCollidableEdges() {
+        sketch.strokeWeight(6);
+        sketch.stroke(255, 0, 0);
+        if ((collidableEdges & TOP_LEFT) != 0) {
+            sketch.point(position.x, position.y);
+        }
+        if ((collidableEdges & TOP_RIGHT) != 0) {
+            sketch.point(position.x + width, position.y);
+        }
+        if ((collidableEdges & BOTTOM_LEFT) != 0) {
+            sketch.point(position.x, position.y + height);
+        }
+        if ((collidableEdges & BOTTOM_RIGHT) != 0) {
+            sketch.point(position.x + width, position.y + height);
         }
     }
 

@@ -161,7 +161,7 @@ public class LevelScene extends Scene {
                 sketch.noStroke();
                 sketch.fill(fillColor.r, fillColor.g, fillColor.b);
 
-                if (ball.frame - 60 < gameFrame) {
+                if (ball.frame - 90 < gameFrame) {
                     if ((ball.frame - gameFrame) % 30 < 15) {
                         sketch.circle(ballX, ballY, ballInQueueSize);
                     }
@@ -172,7 +172,7 @@ public class LevelScene extends Scene {
                 i++;
             }
         }
-        
+
         // update game
         sketch.translate(0, panelHeight);
 
@@ -244,7 +244,8 @@ public class LevelScene extends Scene {
     }
 
     private void editLevel() {
-        EditorScene edit = new EditorScene(sketch, gameScene, width, height, Settings.SIDE_MENU_SIZE);
+        EditorScene edit = new EditorScene(sketch, gameScene, width, height, panelHeight, Settings.SIDE_MENU_SIZE,
+                "level" + level + ".lvl");
         gameScene.setScene(edit);
     }
 

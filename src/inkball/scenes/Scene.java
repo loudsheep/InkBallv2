@@ -31,4 +31,7 @@ public abstract class Scene {
 
     public void mouseReleased(int mouseX, int mouseY) {
     }
+
+    public void keyPressed(int keyCode) {
+    }
 }

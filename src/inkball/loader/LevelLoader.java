@@ -31,7 +31,6 @@ public class LevelLoader {
         if (lines.size() <= mapDimensions.x) throw new IncorrectFileFormat("File is missing map description");
 
         GameGrid resultGrid = new GameGrid((int) mapDimensions.x, (int) mapDimensions.y, gameWidth, gameHeight);
-        Tile[][] gridTiles = new Tile[(int) mapDimensions.x][(int) mapDimensions.y];
 
         Vector2 squareSize = new Vector2(gameWidth / mapDimensions.x, gameHeight / mapDimensions.y);
 
@@ -51,7 +50,7 @@ public class LevelLoader {
 
                 int numberOfSquares = Integer.parseInt(expr[0]);
                 Tile.TILE_TYPE tileType = Tile.TILE_TYPE.valueOf(expr[1]);
-                Tile.TILE_COLOR tileColor = null;
+                Tile.TILE_COLOR tileColor;
 
                 if (expr.length == 3) {
                     tileColor = Tile.TILE_COLOR.valueOf(expr[2]);
@@ -73,11 +72,13 @@ public class LevelLoader {
             positionY++;
         }
 
+        resultGrid.calculateCollidableEdges();
+
         if (currentLine < lines.size()) { // some ball setting left in file to be loaded
             for (; currentLine < lines.size(); currentLine++) {
                 String[] line = lines.get(currentLine).split(",");
                 if (line.length < 4) {
-                    throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
+                    throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1) + " settings too short");
                 }
 
                 if (line[0].equals("static")) {
@@ -91,7 +92,7 @@ public class LevelLoader {
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
                         if (param.length < 2) {
-                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
+                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1) + " incorrect parameter");
                         }
 
                         switch (param[0]) {
@@ -125,7 +126,7 @@ public class LevelLoader {
                     for (int i = 1; i < line.length; i++) {
                         String[] param = line[i].split("=");
                         if (param.length < 2) {
-                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1));
+                            throw new IncorrectFileFormat("Ball setting incorrect at line " + (currentLine + 1) + " incorrect parameter");
                         }
 
                         switch (param[0]) {

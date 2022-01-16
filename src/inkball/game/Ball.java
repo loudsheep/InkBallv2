@@ -2,11 +2,8 @@ package inkball.game;
 
 import inkball.util.Settings;
 import processing.core.PApplet;
-import processing.core.PVector;
 import util.Color;
 import vector.Vector2;
-
-import java.util.Set;
 
 public class Ball {
     private PApplet sketch;
@@ -34,7 +31,7 @@ public class Ball {
     }
 
     private void updatePosition() {
-        this.velocity.limit(maxSpeed);
+        this.velocity.setLength(maxSpeed);
         this.position.add(this.velocity);
     }
 
@@ -60,29 +57,52 @@ public class Ball {
         updatePosition();
         collideWithMap(gameGrid);
         collideWithLines(userLines);
+        collideWithHoles(gameGrid);
 
         show();
     }
 
-    // collision with tiles on map
-    public void collideWithMap(GameGrid gameGrid) {
+    public void collideWithHoles(GameGrid gameGrid) {
         Vector2 approxPosition = new Vector2();
         approxPosition.x = (int) (position.x / gameGrid.getWidth() * gameGrid.getSquaresX());
         approxPosition.y = (int) (position.y / gameGrid.getHeight() * gameGrid.getSquaresY());
+
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                Tile hole = gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j));
+                if (hole == null) continue;
+                if (hole.getTileType() == Tile.TILE_TYPE.HOLE) {
+                    sketch.strokeWeight(5);
+//                    sketch.stroke(255,0,0);
+//                    sketch.point(hole.getCenter().x, hole.getCenter().y);
+                    if (hole.getCenter().distSq(approxPosition) < Math.pow(hole.getWidth() / 1.5, 3)) {
+                        sketch.stroke(255, 0, 0);
+                        sketch.point(hole.getCenter().x, hole.getCenter().y);
+                    }
+                }
+            }
+        }
+    }
+
+    // collision with tiles on map
+    public void collideWithMap(GameGrid gameGrid) {
+        Vector2 gridPosition = new Vector2();
+        gridPosition.x = (int) (position.x / gameGrid.getWidth() * gameGrid.getSquaresX());
+        gridPosition.y = (int) (position.y / gameGrid.getHeight() * gameGrid.getSquaresY());
 
         if (Settings.DEBUG) {
             sketch.stroke(255, 0, 0);
             sketch.strokeWeight(2);
             sketch.fill(255, 0, 0, 100);
-            sketch.rect((approxPosition.x - 1) * gameGrid.getSquareWidth(),
-                    (approxPosition.y - 1) * gameGrid.getSquareWidth(),
+            sketch.rect((gridPosition.x - 1) * gameGrid.getSquareWidth(),
+                    (gridPosition.y - 1) * gameGrid.getSquareWidth(),
                     gameGrid.getSquareWidth() * 3,
                     gameGrid.getSquareWidth() * 3);
         }
 
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                Tile currentTile = gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j));
+                Tile currentTile = gameGrid.getTile((int) (gridPosition.x + i), (int) (gridPosition.y + j));
                 if (currentTile != null) {
                     if (currentTile.getTileType() == Tile.TILE_TYPE.FREE ||
                             currentTile.getTileType() == Tile.TILE_TYPE.SPAWN ||
@@ -92,6 +112,8 @@ public class Ball {
                     }
 
                     if (sideCollision(currentTile)) continue;
+
+                    if (edgeCollision(currentTile)) continue;
                 }
             }
         }
@@ -130,6 +152,53 @@ public class Ball {
             return true;
         }
 
+
+        return false;
+    }
+
+    private boolean edgeCollision(Tile tile) {
+        if (tile.collidableEdges == Tile.NONE) return false;
+//        float nearestX = PApplet.max(s.getPosX(), PApplet.min(pos.x, s.getPosX() + s.getW()));
+//        float nearestY = PApplet.max(s.getPosY(), PApplet.min(pos.y, s.getPosY() + s.getH()));
+
+        float nearestX = Math.max(tile.getPosition().x, Math.min(position.x, tile.getPosition().x + tile.getWidth()));
+        float nearestY = Math.max(tile.getPosition().y, Math.min(position.y, tile.getPosition().y + tile.getHeight()));
+
+        boolean top_left = (tile.collidableEdges & Tile.TOP_LEFT) == Tile.TOP_LEFT && nearestX == tile.getPosition().x && nearestY == tile.getPosition().y;
+        boolean top_right = (tile.collidableEdges & Tile.TOP_RIGHT) == Tile.TOP_RIGHT && nearestX == tile.getPosition().x + tile.getWidth() && nearestY == tile.getPosition().y;
+        boolean bottom_left = (tile.collidableEdges & Tile.BOTTOM_LEFT) == Tile.BOTTOM_LEFT && nearestX == tile.getPosition().x && nearestY == tile.getPosition().y + tile.getHeight();
+        boolean bottom_right = (tile.collidableEdges & Tile.BOTTOM_RIGHT) == Tile.BOTTOM_RIGHT && nearestX == tile.getPosition().x + tile.getWidth() && nearestY == tile.getPosition().y + tile.getHeight();
+
+        if (top_left || top_right || bottom_left || bottom_right) {
+            Vector2 distance = new Vector2(position.x - nearestX, position.y - nearestY);
+
+            if (distance.lengthSq() >= radius * radius) return false;
+            System.out.println("Collision");
+
+            Vector2 normal = new Vector2(distance).normalize();
+            float dot = Vector2.dot(velocity, normal);
+
+            velocity.x -= 2 * dot * normal.x;
+            velocity.y -= 2 * dot * normal.y;
+
+            updatePosition();
+            return true;
+
+//            Vector2 normal = new Vector2(-distance.y, distance.x);
+//            double normalAngle = Math.atan2(normal.y, normal.x);
+//            double angle = Math.atan2(velocity.y, velocity.x);
+//
+//            double theta = normalAngle - angle;
+//            velocity.x = (float) (Math.cos(theta) * velocity.length());
+//            velocity.y = (float) (Math.sin(theta) * velocity.length());
+//
+//            while(distance.lengthSq() < radius * radius) {
+//                updatePosition();
+//                distance = new Vector2(position.x - nearestX, position.y - nearestY);
+//            }
+//
+//            return true;
+        }
 
         return false;
     }

@@ -1,5 +1,6 @@
 package inkball.game;
 
+import inkball.util.Settings;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class GameGrid {
     private PApplet sketch;
     private Tile[][] map;
     private List<Tile> spawningSquares = new ArrayList<>();
+    private boolean recalculateCollidableEdges = true;
 
     public GameGrid(PApplet sketch, int squaresX, int squaresY, int width, int height) {
         this.sketch = sketch;
@@ -46,6 +48,16 @@ public class GameGrid {
                 map[i][j].update();
             }
         }
+
+        if(Settings.DEBUG) {
+            for(int i = 0; i < map.length; i++) {
+                for(int j = 0; j < map[i].length; j++) {
+                    if(map[i][j].collidableEdges != Tile.NONE) {
+                        map[i][j].drawCollidableEdges();
+                    }
+                }
+            }
+        }
     }
 
     public void setTileAt(int x, int y, Tile tile) {
@@ -57,6 +69,52 @@ public class GameGrid {
         if (tile.getTileType() == Tile.TILE_TYPE.SPAWN) {
             spawningSquares.add(tile);
         }
+        recalculateCollidableEdges = true;
+    }
+
+    public void calculateCollidableEdges() {
+        if (!recalculateCollidableEdges) return;
+
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[x].length; y++) {
+                Tile tile = map[x][y];
+                if (tile.getTileType() != Tile.TILE_TYPE.WALL) continue;
+
+                tile.collidableEdges = Tile.TOP_LEFT | Tile.TOP_RIGHT | Tile.BOTTOM_LEFT | Tile.BOTTOM_RIGHT;
+
+                if (inMap(x - 1, y)) {
+                    if (map[x - 1][y].getTileType() == Tile.TILE_TYPE.WALL) {
+                        tile.collidableEdges &= ~Tile.TOP_LEFT;
+                        tile.collidableEdges &= ~Tile.BOTTOM_LEFT;
+                    }
+                }
+
+                if (inMap(x + 1, y)) {
+                    if (map[x + 1][y].getTileType() == Tile.TILE_TYPE.WALL) {
+                        tile.collidableEdges &= ~Tile.TOP_RIGHT;
+                        tile.collidableEdges &= ~Tile.BOTTOM_RIGHT;
+                    }
+                }
+
+                if (inMap(x, y - 1)) {
+                    if (map[x][y - 1].getTileType() == Tile.TILE_TYPE.WALL) {
+                        tile.collidableEdges &= ~Tile.TOP_LEFT;
+                        tile.collidableEdges &= ~Tile.TOP_RIGHT;
+                    }
+                }
+
+                if (inMap(x, y + 1)) {
+                    if (map[x][y + 1].getTileType() == Tile.TILE_TYPE.WALL) {
+                        tile.collidableEdges &= ~Tile.BOTTOM_LEFT;
+                        tile.collidableEdges &= ~Tile.BOTTOM_RIGHT;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean inMap(int x, int y) {
+        return x >= 0 && x < map.length && y >= 0 && y < map[x].length;
     }
 
     public void mousePressed(int mouseX, int mouseY) {

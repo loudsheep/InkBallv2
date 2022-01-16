@@ -20,7 +20,7 @@ public class App extends PApplet implements GameScene {
         setTitle("InkBall");
         setScene(0);
 
-        surface.setResizable(true);
+        surface.setResizable(false);
     }
 
     @Override
@@ -41,8 +41,10 @@ public class App extends PApplet implements GameScene {
 
     @Override
     public void keyPressed() {
-        if(keyCode == 114) {
+        if (keyCode == 114) {
             Settings.DEBUG = !Settings.DEBUG;
+        } else {
+            currentScene.keyPressed(keyCode);
         }
     }
 
@@ -53,8 +55,8 @@ public class App extends PApplet implements GameScene {
 
     @Override
     public boolean resize(int newWidth, int newHeight) {
-        if(newWidth < Settings.MIN_WIDTH || newWidth > displayWidth ||
-        newHeight < Settings.MIN_HEIGHT || newHeight > displayHeight) {
+        if (newWidth < Settings.MIN_WIDTH || newWidth > displayWidth ||
+                newHeight < Settings.MIN_HEIGHT || newHeight > displayHeight) {
             return false;
         }
 
@@ -71,20 +73,21 @@ public class App extends PApplet implements GameScene {
     public void setScene(int scene) {
         switch (scene) {
             case 0:
-                currentScene = new MainMenuScene(this, this, width, height);
+                currentScene = new MainMenuScene(this, this, WINDOW_WIDTH, WINDOW_WIDTH + MENU_BAR_HEIGHT);
                 break;
             case 1:
-                currentScene = new LevelScene(this, this, width, height, MENU_BAR_HEIGHT);
+                currentScene = new LevelScene(this, this, WINDOW_WIDTH, WINDOW_WIDTH + MENU_BAR_HEIGHT, MENU_BAR_HEIGHT);
                 break;
             case 2:
-                currentScene = new SettingsScene(this, this, width, height);
+                currentScene = new SettingsScene(this, this, WINDOW_WIDTH, WINDOW_WIDTH + MENU_BAR_HEIGHT);
                 break;
-            case 3:
-                currentScene = new EditorScene(this, this, width, height, 100);
-                break;
+//            case 3:
+//                currentScene = new EditorScene(this, this, width, height, MENU_BAR_HEIGHT, Settings.SIDE_MENU_SIZE);
+//                break;
             default:
                 return;
         }
+        resize(WINDOW_WIDTH, WINDOW_WIDTH + MENU_BAR_HEIGHT);
         currentScene.init();
     }
 
