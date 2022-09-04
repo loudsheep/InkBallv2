@@ -104,16 +104,34 @@ public class Ball {
             for (int j = -1; j <= 1; j++) {
                 Tile currentTile = gameGrid.getTile((int) (gridPosition.x + i), (int) (gridPosition.y + j));
                 if (currentTile != null) {
-                    if (currentTile.getTileType() == Tile.TILE_TYPE.FREE ||
-                            currentTile.getTileType() == Tile.TILE_TYPE.SPAWN ||
-                            currentTile.getTileType() == Tile.TILE_TYPE.NONE ||
-                            currentTile.getTileType() == Tile.TILE_TYPE.HOLE) { // don't do physics on that types of tiles
-                        continue;
+
+                    switch (currentTile.getTileType()) {
+                        case WALL:
+                            if(sideCollision(currentTile)) {
+                                break;
+                            }
+                            if (edgeCollision(currentTile)) {
+                                break;
+                            }
+                            break;
+                        case FREE:
+                        case SPAWN:
+                        case NONE:
+                        case HOLE:
+                        default:
+                            break;
                     }
 
-                    if (sideCollision(currentTile)) continue;
-
-                    if (edgeCollision(currentTile)) continue;
+//                    if (currentTile.getTileType() == Tile.TILE_TYPE.FREE ||
+//                            currentTile.getTileType() == Tile.TILE_TYPE.SPAWN ||
+//                            currentTile.getTileType() == Tile.TILE_TYPE.NONE ||
+//                            currentTile.getTileType() == Tile.TILE_TYPE.HOLE) { // don't do physics on that types of tiles
+//                        continue;
+//                    }
+//
+//                    if (sideCollision(currentTile)) continue;
+//
+//                    if (edgeCollision(currentTile)) continue;
                 }
             }
         }
@@ -158,8 +176,6 @@ public class Ball {
 
     private boolean edgeCollision(Tile tile) {
         if (tile.collidableEdges == Tile.NONE) return false;
-//        float nearestX = PApplet.max(s.getPosX(), PApplet.min(pos.x, s.getPosX() + s.getW()));
-//        float nearestY = PApplet.max(s.getPosY(), PApplet.min(pos.y, s.getPosY() + s.getH()));
 
         float nearestX = Math.max(tile.getPosition().x, Math.min(position.x, tile.getPosition().x + tile.getWidth()));
         float nearestY = Math.max(tile.getPosition().y, Math.min(position.y, tile.getPosition().y + tile.getHeight()));
@@ -182,24 +198,12 @@ public class Ball {
             velocity.y -= 2 * dot * normal.y;
 
             updatePosition();
-            return true;
-
-//            Vector2 normal = new Vector2(-distance.y, distance.x);
-//            double normalAngle = Math.atan2(normal.y, normal.x);
-//            double angle = Math.atan2(velocity.y, velocity.x);
-//
-//            double theta = normalAngle - angle;
-//            velocity.x = (float) (Math.cos(theta) * velocity.length());
-//            velocity.y = (float) (Math.sin(theta) * velocity.length());
-//
-//            while(distance.lengthSq() < radius * radius) {
-//                updatePosition();
-//                distance = new Vector2(position.x - nearestX, position.y - nearestY);
-//            }
-//
-//            return true;
         }
 
+        return false;
+    }
+
+    private boolean oneWayTileCollision(Tile tile) {
         return false;
     }
 
