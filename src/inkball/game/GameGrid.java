@@ -14,6 +14,7 @@ public class GameGrid {
     private PApplet sketch;
     private Tile[][] map;
     private List<Tile> spawningSquares = new ArrayList<>();
+    private List<Tile> holeSquares = new ArrayList<>();
     private boolean recalculateCollidableEdges = true;
 
     public GameGrid(PApplet sketch, int squaresX, int squaresY, int width, int height) {
@@ -49,10 +50,10 @@ public class GameGrid {
             }
         }
 
-        if(Settings.DEBUG) {
-            for(int i = 0; i < map.length; i++) {
-                for(int j = 0; j < map[i].length; j++) {
-                    if(map[i][j].collidableEdges != Tile.NONE) {
+        if (Settings.DEBUG) {
+            for (int i = 0; i < map.length; i++) {
+                for (int j = 0; j < map[i].length; j++) {
+                    if (map[i][j].collidableEdges != Tile.NONE) {
                         map[i][j].drawCollidableEdges();
                     }
                 }
@@ -68,6 +69,8 @@ public class GameGrid {
         map[x][y] = tile;
         if (tile.getTileType() == Tile.TILE_TYPE.SPAWN) {
             spawningSquares.add(tile);
+        } else if (tile.getTileType() == Tile.TILE_TYPE.HOLE) {
+            holeSquares.add(tile);
         }
         recalculateCollidableEdges = true;
     }
@@ -82,28 +85,28 @@ public class GameGrid {
 
                 tile.collidableEdges = Tile.TOP_LEFT | Tile.TOP_RIGHT | Tile.BOTTOM_LEFT | Tile.BOTTOM_RIGHT;
 
-                if (inMap(x - 1, y)) {
+                if (isInMap(x - 1, y)) {
                     if (map[x - 1][y].getTileType() == Tile.TILE_TYPE.WALL) {
                         tile.collidableEdges &= ~Tile.TOP_LEFT;
                         tile.collidableEdges &= ~Tile.BOTTOM_LEFT;
                     }
                 }
 
-                if (inMap(x + 1, y)) {
+                if (isInMap(x + 1, y)) {
                     if (map[x + 1][y].getTileType() == Tile.TILE_TYPE.WALL) {
                         tile.collidableEdges &= ~Tile.TOP_RIGHT;
                         tile.collidableEdges &= ~Tile.BOTTOM_RIGHT;
                     }
                 }
 
-                if (inMap(x, y - 1)) {
+                if (isInMap(x, y - 1)) {
                     if (map[x][y - 1].getTileType() == Tile.TILE_TYPE.WALL) {
                         tile.collidableEdges &= ~Tile.TOP_LEFT;
                         tile.collidableEdges &= ~Tile.TOP_RIGHT;
                     }
                 }
 
-                if (inMap(x, y + 1)) {
+                if (isInMap(x, y + 1)) {
                     if (map[x][y + 1].getTileType() == Tile.TILE_TYPE.WALL) {
                         tile.collidableEdges &= ~Tile.BOTTOM_LEFT;
                         tile.collidableEdges &= ~Tile.BOTTOM_RIGHT;
@@ -113,7 +116,7 @@ public class GameGrid {
         }
     }
 
-    private boolean inMap(int x, int y) {
+    private boolean isInMap(int x, int y) {
         return x >= 0 && x < map.length && y >= 0 && y < map[x].length;
     }
 
@@ -152,5 +155,9 @@ public class GameGrid {
 
     public List<Tile> getSpawningSquares() {
         return spawningSquares;
+    }
+
+    public List<Tile> getHoleSquares() {
+        return holeSquares;
     }
 }

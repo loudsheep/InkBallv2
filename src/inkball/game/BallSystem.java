@@ -1,5 +1,6 @@
 package inkball.game;
 
+import inkball.util.Settings;
 import inkball.util.Utility;
 import processing.core.PApplet;
 
@@ -11,6 +12,7 @@ public class BallSystem {
 
     private List<Ball> balls;
     private List<BallQueue> waitingBalls;
+    private int gameFrame;
 
     public BallSystem(PApplet sketch) {
         this();
@@ -33,8 +35,13 @@ public class BallSystem {
     }
 
     public void update(GameGrid gameGrid, InkLinesSystem userLines, int gameFrame) {
+        this.gameFrame = gameFrame;
         for (Ball b : balls) {
-            b.update(gameGrid, userLines);
+            b.update(gameGrid, userLines, this);
+        }
+
+        for (int i = balls.size() - 1; i >= 0; i--) {
+            if (balls.get(i).markAsDeleted) balls.remove(i);
         }
 
         if (gameGrid.getSpawningSquares().size() > 0) {
@@ -59,9 +66,19 @@ public class BallSystem {
         waitingBalls.sort(BallQueue::compareTo);
     }
 
+    public void addWaitingBallInGame(int speed, BallColor color) {
+        BallQueue ball = new BallQueue(speed, color, gameFrame + Settings.newWaitingBallTimeOffset);
+        waitingBalls.add(ball);
+        waitingBalls.sort(BallQueue::compareTo);
+    }
+
     public void addBall(Ball b) {
         b.setSketch(sketch);
         this.balls.add(b);
+    }
+
+    public boolean levelFinished() {
+        return balls.size() == 0 && waitingBalls.size() == 0;
     }
 
     public void clearAll() {

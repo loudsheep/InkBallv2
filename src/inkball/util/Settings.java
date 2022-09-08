@@ -24,9 +24,12 @@ public class Settings {
         ballColors.put(BallColor.YELLOW, new Color(201, 191, 4));
     }
 
-    public static final float ATTRACTION_RADIUS = 0.33f; // set attraction radius of a hole to 1/3 of tiles width
+    public static final float ATTRACTION_RADIUS = 0.3f; // set attraction radius of a hole to 1/3 of tiles width
 
     public static final int textSize = 20;
 
     public static final int maxDynamicBallsInFile = 10;
+    public static final int holeCalculationBorder = 3; // if a ball is closer to a hole that this value, then
+    // attraction force are to be calculated
+    public static final int newWaitingBallTimeOffset = 90;
 }

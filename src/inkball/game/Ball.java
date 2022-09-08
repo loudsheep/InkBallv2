@@ -5,6 +5,9 @@ import processing.core.PApplet;
 import util.Color;
 import vector.Vector2;
 
+import java.util.List;
+import java.util.Objects;
+
 public class Ball {
     private PApplet sketch;
     private Vector2 position;
@@ -12,6 +15,8 @@ public class Ball {
     private float maxSpeed;
     private float radius;
     private BallColor color;
+
+    public boolean markAsDeleted = false;
 
     public Ball(float positionX, float positionY, float maxSpeed, float radius, BallColor color) {
         this.position = new Vector2(positionX, positionY);
@@ -53,34 +58,44 @@ public class Ball {
         }
     }
 
-    public void update(GameGrid gameGrid, InkLinesSystem userLines) {
-        updatePosition();
+    public void update(GameGrid gameGrid, InkLinesSystem userLines, BallSystem system) {
         collideWithMap(gameGrid);
         collideWithLines(userLines);
-        collideWithHoles(gameGrid);
+        collideWithHoles(gameGrid, system);
+
+        updatePosition();
 
         show();
     }
 
-    public void collideWithHoles(GameGrid gameGrid) {
-        Vector2 approxPosition = new Vector2();
-        approxPosition.x = (int) (position.x / gameGrid.getWidth() * gameGrid.getSquaresX());
-        approxPosition.y = (int) (position.y / gameGrid.getHeight() * gameGrid.getSquaresY());
+    private boolean getSimpleDistance(Vector2 p1, Vector2 p2, int squareBorderSize) {
+        int dX = (int) Math.abs(p1.x - p2.x);
+        int dY = (int) Math.abs(p1.y - p2.y);
 
-        for (int i = -2; i <= 2; i++) {
-            for (int j = -2; j <= 2; j++) {
-                Tile hole = gameGrid.getTile((int) (approxPosition.x + i), (int) (approxPosition.y + j));
-                if (hole == null) continue;
-                if (hole.getTileType() == Tile.TILE_TYPE.HOLE) {
-                    sketch.strokeWeight(5);
-//                    sketch.stroke(255,0,0);
-//                    sketch.point(hole.getCenter().x, hole.getCenter().y);
-                    if (hole.getCenter().distSq(approxPosition) < Math.pow(hole.getWidth() / 1.5, 3)) {
-                        sketch.stroke(255, 0, 0);
-                        sketch.point(hole.getCenter().x, hole.getCenter().y);
-                    }
+        return dX <= squareBorderSize && dY <= squareBorderSize;
+    }
+
+    public void collideWithHoles(GameGrid gameGrid, BallSystem system) {
+        List<Tile> holes = gameGrid.getHoleSquares();
+
+        for (Tile hole : holes) {
+            if (!getSimpleDistance(hole.getCenter(), position,
+                    Settings.holeCalculationBorder * gameGrid.getWidth() / gameGrid.getSquaresX())) continue;
+
+            float distanceSq = position.distSq(hole.getCenter());
+
+            if (distanceSq <= (hole.getWidth() * Settings.ATTRACTION_RADIUS * hole.getWidth() * Settings.ATTRACTION_RADIUS)) { // ball has fallen! inside the hole, delete it
+                if (Objects.equals(hole.getTileColor().toString(), color.toString()) || hole.getTileColor() == Tile.TILE_COLOR.GREY) { // ball got into correct hole, delete it
+
+                } else { // ball got into wrong hole, add to waiting balls
+                    system.addWaitingBallInGame((int) maxSpeed, color);
                 }
+                markAsDeleted = true;
             }
+
+            if (distanceSq > hole.getWidth() * 1.5f * hole.getWidth() * 1.5f) continue;
+
+
         }
     }
 
@@ -107,7 +122,7 @@ public class Ball {
 
                     switch (currentTile.getTileType()) {
                         case WALL:
-                            if(sideCollision(currentTile)) {
+                            if (sideCollision(currentTile)) {
                                 break;
                             }
                             if (edgeCollision(currentTile)) {

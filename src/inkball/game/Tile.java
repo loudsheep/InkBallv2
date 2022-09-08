@@ -191,6 +191,10 @@ public class Tile {
         return tileType;
     }
 
+    public TILE_COLOR getTileColor() {
+        return tileColor;
+    }
+
     public void setSketch(PApplet sketch) {
         this.sketch = sketch;
     }

@@ -55,6 +55,8 @@ public class LevelScene extends Scene {
         File f = null;
         System.out.println(level);
 
+        gamePaused = false;
+
         if (folder.isDirectory() && folder.listFiles().length > 0) {
             File[] files = folder.listFiles();
             this.maxLevel = files.length - 1;
@@ -181,6 +183,10 @@ public class LevelScene extends Scene {
             userLines.draw(sketch.mouseX, sketch.mouseY - panelHeight, sketch.pmouseX, sketch.pmouseY - panelHeight);
             userLines.update();
             ballSystem.update(gameGrid, userLines, gameFrame);
+
+            if(ballSystem.levelFinished()) {
+                nextLevel();
+            }
         }
 
         nextLvl.show();
